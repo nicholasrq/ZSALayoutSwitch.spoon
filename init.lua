@@ -117,27 +117,41 @@ function kill_keymapp()
     end
 end
 
+function keymap_is_running()
+    return hs.application.find("Keymapp", true, true) ~= nil
+end
+
 function start_keymapp(stop_if_running)
-    if stop_if_running == true then
-        local app = hs.appfinder.appFromName("Keymapp")
-        if app and app:isRunning() then
+    log.d("Starting Keymapp")
+    local is_running = keymap_is_running()
+    local app = hs.application.find("Keymapp", true, true)
+
+    if is_running and stop_if_running == false then
+        log.d("Interrupted Keymapp launch")
+        if app:isRunning() then
+            app:hide()
             return
         end
     end
+
     local current_app = hs.application.frontmostApplication()
     local bundle_id = nil
+
+    local started = hs.application.launchOrFocus("Keymapp")
+    local app = hs.application.find("Keymapp", true, true)
+    if app ~= nil then
+        app:hide()
+    end
 
     if current_app ~= nil then
         bundle_id = current_app:bundleID()
     end
 
-    local app = hs.application.launchOrFocus("Keymapp")
-
     if bundle_id ~= nil then
         hs.application.launchOrFocusByBundleID(bundle_id)
     end
 
-    return app
+    return started
 end
 
 -- Restart Keymapp
