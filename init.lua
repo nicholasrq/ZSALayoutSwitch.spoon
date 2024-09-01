@@ -92,6 +92,8 @@ function obj:start()
         end
     end)
 
+    restart_keymapp()
+
     usb_watcher:start()
 
     self:sync_layers()
