@@ -21,9 +21,14 @@ obj.debug = false
 
 obj.layers = {}
 obj.kontrol_path = "$HOME/.bin/kontroll"
+obj.keyboard_name = "Voyager"
 
 function obj:set_layers(layers)
     self.layers = layers
+end
+
+function obj:set_keyboard(name)
+    self.keyboard_name = name
 end
 
 function obj:kontroll(command)
@@ -74,7 +79,7 @@ function obj:start()
     end)
 
     local usb_watcher = hs.usb.watcher.new(function(data)
-        if data["productName"] == "Voyager" then
+        if data["productName"] == self.keyboard_name then
             if data["eventType"] == "added" then
                 if restart_keymapp() and self:try_connect() then
                     self:sync_layers()
