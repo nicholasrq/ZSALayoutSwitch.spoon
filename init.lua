@@ -92,7 +92,7 @@ function obj:start()
         end
     end)
 
-    restart_keymapp()
+    start_keymapp(false)
 
     usb_watcher:start()
 
@@ -117,12 +117,13 @@ function kill_keymapp()
     end
 end
 
--- Restart Keymapp
--- Upon start Keymapp will grab the focus even if "Start keymapp minimized" is on
--- To fight that, `restart_keymapp` will remember currently focused app
--- and will focus it back when Keymapp is started
-function restart_keymapp()
-    kill_keymapp()
+function start_keymapp(stop_if_running)
+    if stop_if_running == true then
+        local app = hs.appfinder.appFromName("Keymapp")
+        if app and app:isRunning() then
+            return
+        end
+    end
     local current_app = hs.application.frontmostApplication()
     local bundle_id = nil
 
@@ -137,6 +138,15 @@ function restart_keymapp()
     end
 
     return app
+end
+
+-- Restart Keymapp
+-- Upon start Keymapp will grab the focus even if "Start keymapp minimized" is on
+-- To fight that, `restart_keymapp` will remember currently focused app
+-- and will focus it back when Keymapp is started
+function restart_keymapp()
+    kill_keymapp()
+    start_keymapp()
 end
 
 return obj
